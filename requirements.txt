@@ -1,4 +1,4 @@
-bokeh==2.4.3
+bokeh
 finufft
 mrcfile
 numpy
@@ -9,6 +9,7 @@ scikit_image
 scipy
 st-clickable-images
 streamlit
+streamlit_bokeh
 uptime
 xmltodict
 streamlit-drawable-canvas

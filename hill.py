@@ -1,7 +1,7 @@
 """ 
 MIT License
 
-Copyright (c) 2020-2024 Wen Jiang
+Copyright (c) 2020-2025 Wen Jiang
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ def import_with_auto_install(packages, scope=locals()):
             subprocess.check_call([sys.executable, '-m', 'pip', 'install', package_pip_name])
             importlib.reload(site)
             scope[package_import_name] = importlib.import_module(package_import_name)
-required_packages = "streamlit numpy scipy numba bokeh skimage:scikit_image mrcfile finufft psutil qrcode xmltodict st_clickable_images streamlit_drawable_canvas:streamlit-drawable-canvas".split()
+required_packages = "streamlit numpy scipy numba bokeh streamlit_bokeh skimage:scikit_image mrcfile finufft psutil qrcode xmltodict st_clickable_images streamlit_drawable_canvas:streamlit-drawable-canvas".split()
 import_with_auto_install(required_packages)
 
 
@@ -49,8 +49,8 @@ from os import getpid
 from urllib.parse import parse_qs
 
 import numpy as np
-np.bool8 = bool  # fix for bokeh 2.4.3
 
+from streamlit_bokeh import streamlit_bokeh
 from bokeh.events import MouseMove, MouseEnter, DoubleTap
 from bokeh.io import export_png
 from bokeh.layouts import gridplot, column, layout
@@ -867,7 +867,7 @@ def main(args):
                 figs_grid = gridplot(children=[figs], toolbar_location='right')
                 override_height = pny+120
 
-            st.bokeh_chart(figs_grid, use_container_width=False)                     
+            streamlit_bokeh(figs_grid, use_container_width=False)                     
 
             if movie_frames>0:
                 with st.spinner(text="Generating movie of tilted power spectra/phases ..."):
@@ -894,7 +894,7 @@ def main(args):
             else:
                 st.query_params.clear()
 
-            st.markdown("*Developed by the [Jiang Lab@Purdue University](https://jiang.bio.purdue.edu). Report problems to [HILL@GitHub](https://github.com/jianglab/hill/issues)*")
+            st.markdown("*Developed by the [Jiang Lab@Penn State University](https://jianglab.science.psu.edu/HILL). Report problems to [HILL@GitHub](https://github.com/jianglab/hill/issues)*")
 
 
 
@@ -1358,11 +1358,11 @@ def obtain_input_image(column, param_i=0, image_index_sync=0):
                 with st.container(height=min(nx*2, ny), border=False):
                     #st.image(normalize(data), use_column_width=True, caption=image_label)
                     fig = create_image_figure(data, apix, apix, title=image_label, title_location="below", plot_width=None, plot_height=None, x_axis_label=None, y_axis_label=None, tooltips=None, show_axis=False, show_toolbar=False, crosshair_color="white")
-                    st.bokeh_chart(fig, use_container_width=True)
+                    streamlit_bokeh(fig, use_container_width=True)
             else:
                 #st.image(normalize(data), use_column_width=True, caption=image_label)
                 fig = create_image_figure(data, apix, apix, title=image_label, title_location="below", plot_width=None, plot_height=None, x_axis_label=None, y_axis_label=None, tooltips=None, show_axis=False, show_toolbar=False, crosshair_color="white")
-                st.bokeh_chart(fig, use_container_width=True)
+                streamlit_bokeh(fig, use_container_width=True)
 
         transformed_image = st.empty()
         transformed = transpose or negate or angle or dx
@@ -1411,7 +1411,7 @@ def obtain_input_image(column, param_i=0, image_index_sync=0):
                 }
             """)
             p.js_on_event(DoubleTap, toggle_legend_js_x)
-            st.bokeh_chart(p, use_container_width=True)
+            streamlit_bokeh(p, use_container_width=True)
         
             fraction_x = mask_radius/(nx//2*apix)
             tapering_image = generate_tapering_filter(image_size=data.shape, fraction_start=[mask_len_fraction, fraction_x], fraction_slope=(1.0-mask_len_fraction)/2.)
@@ -1428,11 +1428,11 @@ def obtain_input_image(column, param_i=0, image_index_sync=0):
                     with st.container(height=min(nx*2, ny), border=False):
                         #st.image(normalize(data), use_column_width=True, caption=image_label)
                         fig = create_image_figure(data, apix, apix, title=image_label, title_location="below", plot_width=None, plot_height=None, x_axis_label=None, y_axis_label=None, tooltips=None, show_axis=False, show_toolbar=False, crosshair_color="white")
-                        st.bokeh_chart(fig, use_container_width=True)
+                        streamlit_bokeh(fig, use_container_width=True)
                 else:
                     #st.image(normalize(data), use_column_width=True, caption=image_label)
                     fig = create_image_figure(data, apix, apix, title=image_label, title_location="below", plot_width=None, plot_height=None, x_axis_label=None, y_axis_label=None, tooltips=None, show_axis=False, show_toolbar=False, crosshair_color="white")
-                    st.bokeh_chart(fig, use_container_width=True)
+                    streamlit_bokeh(fig, use_container_width=True)
 
         if input_type in ["image"]:
             acf = auto_correlation(data, sqrt=True, high_pass_fraction=0.1)
@@ -1459,7 +1459,7 @@ def obtain_input_image(column, param_i=0, image_index_sync=0):
                 }
             """)
             p.js_on_event(DoubleTap, toggle_legend_js_y)
-            st.bokeh_chart(p, use_container_width=True)
+            streamlit_bokeh(p, use_container_width=True)
 
     if transformed:
         image_container = transformed_image
@@ -2578,7 +2578,7 @@ def fit_spline(_disp_col,data,xs,ys,apix,display=False):
         with _disp_col:
             st.write("Fitted spline:")
             p = create_fit_spline_figure(data,xs,ys,new_xs,apix)
-            st.bokeh_chart(p, use_container_width=True)
+            streamlit_bokeh(p, use_container_width=True)
     return new_xs,tck
 
 # test the straightening part by forcing using the center of a straight filament: works
@@ -2653,7 +2653,7 @@ def filament_straighten(_disp_col,data,tck,new_xs,ys,r_filament_pixel_display,ap
     with _disp_col:
         st.write("Straightened image:")
         fig = create_image_figure(new_im, apix, apix, plot_width=nx, plot_height=ny, x_axis_label=None, y_axis_label=None, tooltips=None, show_axis=False, show_toolbar=False, crosshair_color="white")
-        st.bokeh_chart(fig, use_container_width=True)
+        streamlit_bokeh(fig, use_container_width=True)
 
     return new_im
 
