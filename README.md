@@ -1,3 +1,6 @@
+# This project is archived. Further development is in [Helicon](https://github.com/jianglab/helicon)
+---
+
 # HILL: <em>H</em>elical <em>I</em>ndexing using <em>L</em>ayer <em>L</em>ines
 **HILL** is a Web app that allows the user to interactively index the parameters (pitch/twist, rise, csym) of a helical structure. It matches the layer lines expected for the candidate parameters (pitch/twist, rise, csym) to the layer lines in the power spectra of a projection image of the helical structure. 
 
